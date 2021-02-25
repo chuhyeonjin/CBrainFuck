@@ -4,7 +4,7 @@ BUILD := ../build
 TARGET := $(BUILD)/BrainFuck
 
 all: $(BUILD)/main.o
-	$(CC) $(CFLAGS) -o $(TARGET) $^
+	@$(CC) $(CFLAGS) -o $(TARGET) $^
 
 $(BUILD)/%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $^
+	@$(CC) $(CFLAGS) -c -o $@ $^
