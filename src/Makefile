@@ -1,5 +1,5 @@
 CC := gcc-10
-CFLAGS := -Wall
+CFLAGS := -Wall -std=c11
 BUILD := ../build
 TARGET := $(BUILD)/BrainFuck
 
