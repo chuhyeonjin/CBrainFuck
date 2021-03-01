@@ -3,7 +3,7 @@ CFLAGS := -Wall
 BUILD := ../build
 TARGET := $(BUILD)/BrainFuck
 
-all: $(BUILD)/main.o $(BUILD)/print.o
+all: $(BUILD)/main.o
 	@$(CC) $(CFLAGS) -o $(TARGET) $^
 
 $(BUILD)/%.o: %.c
