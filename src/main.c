@@ -3,11 +3,11 @@
 
 #define MAX_DATA_SIZE 30000
 
-void PrintError(char* message) {
+void PrintError(const char* message) {
   fprintf(stderr, "\033[0;31mError:\033[0m %s\n", message);
 }
 
-void PrintWarning(char* message) {
+void PrintWarning(const char* message) {
   printf("\033[0;33mWarning:\033[0m %s\n", message);
 }
 
@@ -26,13 +26,13 @@ void ReadFile(const char* path, char** data_pointer, long* size_pointer) {
 
   *size_pointer = file_size;
 
-  *data_pointer = malloc(file_size);
+  *data_pointer = malloc(file_size + 1);
   if (*data_pointer == NULL) {
     PrintError("cannot allocate memory");
     exit(EXIT_FAILURE);
   }
 
-  if (fgets(*data_pointer, file_size, file) == NULL) {
+  if (fread(*data_pointer, 1, file_size, file) != file_size) {
     PrintError("cannot read file");
     exit(EXIT_FAILURE);
   }
@@ -65,31 +65,63 @@ int main(int argc, char** argv) {
   long data_cursor = 0;
   long code_cursor = 0;
 
+  if (argc < 2) {
+    PrintError("no input file");
+    exit(EXIT_FAILURE);
+  }
+
   ReadFile(argv[1], &code, &code_size);
 
   while (1) {
     switch (code[code_cursor]) {
-      case 62:
+      case '>':
         data_cursor++;
         break;
-      case 60:
+      case '<':
         data_cursor--;
         break;
-      case 43:
+      case '+':
         data[data_cursor]++;
         break;
-      case 45:
+      case '-':
         data[data_cursor]--;
         break;
-      case 46:
+      case '.':
         putchar(data[data_cursor]);
         break;
-      case 44:
+      case ',':
         data[data_cursor] = GetAsciiChar();
         break;
-      case 91:
+      case '[':
+        if (data[data_cursor] == 0) {
+          long nested = 1;
+          while (nested) {
+            code_cursor++;
+            switch (code[code_cursor]) {
+              case '[':
+                nested++;
+                break;
+              case ']':
+                nested--;
+                break;
+            }
+          }
+        }
         break;
-      case 93:
+      case ']':;
+        long nested = 1;
+        while (nested) {
+          code_cursor--;
+          switch (code[code_cursor]) {
+            case '[':
+              nested--;
+              break;
+            case ']':
+              nested++;
+              break;
+          }
+        }
+        code_cursor--;
         break;
       case 0:
         printf("\n");
